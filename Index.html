@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Emergency Cheer-Up System</title>
+    <style>
+        /* Reset & Base Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            /* Dark Theme: Deep black gradient */
+            background: linear-gradient(135deg, #000000 0%, #121212 100%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ecf0f1;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        /* Background Layer for Decorations */
+        .background-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none; 
+        }
+
+        /* Main Container */
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
+            position: relative;
+            z-index: 10; 
+        }
+
+        /* Glassmorphism Card - Dark Mode */
+        .card {
+            background: rgba(30, 30, 30, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 40px 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            position: relative;
+            overflow: visible; 
+        }
+
+        /* Decorative SVGs - Brighter for Dark Mode */
+        .decoration {
+            position: absolute;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .flower {
+            bottom: -15px;
+            left: -15px;
+            width: 80px;
+            height: 80px;
+            stroke: #ff7675; /* Soft Red */
+            fill: none;
+            stroke-width: 2;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .bear {
+            top: -15px;
+            right: -15px;
+            width: 80px;
+            height: 80px;
+            stroke: #74b9ff; /* Soft Blue */
+            fill: none;
+            stroke-width: 2;
+            animation: float 5s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Message Area */
+        .message-box {
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            padding: 0 10px;
+        }
+
+        #message {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            font-weight: 400;
+            color: #ecf0f1; /* Off-white text */
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Button - Pop on Dark Background */
+        button {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 50px;
+            padding: 18px 32px; 
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            max-width: 280px;
+            box-shadow: 0 0 20px rgba(9, 132, 227, 0.4);
+            transition: transform 0.1s ease, box-shadow 0.2s ease;
+            -webkit-appearance: none;
+            outline: none;
+            touch-action: manipulation;
+            position: relative;
+            z-index: 20;
+        }
+
+        button:active {
+            transform: scale(0.96);
+            background: #0984e3;
+        }
+
+        /* Counter */
+        .counter {
+            margin-top: 24px;
+            font-size: 0.85rem;
+            color: #bdc3c7;
+            font-weight: 400;
+        }
+
+        #count {
+            font-weight: 600;
+            color: #ff7675;
+        }
+    </style>
+</head>
+<body>
+
+<div class="background-layer">
+    <!-- SVGs placed here so they can never block clicks -->
+    <svg class="decoration bear" style="position: absolute; top: 10%; right: 5%;" viewBox="0 0 100 100">
+        <circle cx="35" cy="35" r="12" />
+        <circle cx="65" cy="35" r="12" />
+        <circle cx="50" cy="55" r="25" />
+        <ellipse cx="50" cy="60" rx="10" ry="8" />
+        <circle cx="45" cy="50" r="2" fill="#74b9ff" stroke="none"/>
+        <circle cx="55" cy="50" r="2" fill="#74b9ff" stroke="none"/>
+    </svg>
+    
+    <svg class="decoration flower" style="position: absolute; bottom: 10%; left: 5%;" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="8" />
+        <path d="M50 50 Q50 20 70 30 Q50 40 50 50" />
+        <path d="M50 50 Q70 60 80 80 Q60 60 50 50" />
+        <path d="M50 50 Q30 70 20 80 Q40 60 50 50" />
+        <path d="M50 50 Q20 40 10 20 Q40 40 50 50" />
+        <path d="M50 90 L50 100" stroke-width="2" />
+    </svg>
+</div>
+
+<div class="container">
+    <div class="card">
+        <h1>Emergency Cheer-Up System 💻✨</h1>
+        
+        <div class="message-box">
+            <p id="message">Tap the button for a reboot!</p>
+        </div>
+
+        <button id="boost-btn">Boost me</button>
+
+        <div class="counter">
+            Boosts given: <span id="count">0</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Data Source
+    var messages = [
+        "Confidence.exe stopped working, attempting restart now.",
+        "One bad debit doesn’t bankrupt your life’s ledger.",
+        "Temporary glitch detected, permanent brilliance confirmed.",
+        "Your brain is just buffering, not broken.",
+        "Today’s audit was harsh, but your equity is still high.",
+        "Patch 2.0 deploying: Sleep and snacks required.",
+        "You are a high-value asset regardless of one test score.",
+        "Error 404: Failure not found in your system.",
+        "Reconciling your bad day... balance restored tomorrow.",
+        "Your code compiled fine, life just threw an exception.",
+        "Net worth of your intelligence is still off the charts.",
+        "System update required: Add more self-care immediately.",
+        "We can write off this exam as a loss for tax purposes later.",
+        "Your resilience stats are officially maxed out.",
+        "Closing the books on today and opening a fresh ledger tomorrow.",
+        "Reboot successful: Cute and smart mode active.",
+        "Don’t worry, your intellectual assets are fully liquid.",
+        "Just a runtime error, not a syntax error in your soul.",
+        "You’re a blue-chip friend, no matter the market conditions.",
+        "Debugging complete: The problem was the test, not you.",
+        "Your effort credit is way higher than the exam debit.",
+        "Your brain has a firewall against bad days, it’s just loading.",
+        "Even auditors make mistakes; today was just a bad entry.",
+        "Processing power fluctuating, but hardware specs remain top tier.",
+        "Future ROI on you is looking incredibly bullish.",
+        "Manual override engaged: You are doing great.",
+        "Let’s adjust the entries and move on to better things.",
+        "Warning: Wholesome energy levels are critical.",
+        "Your balance sheet is still stronger than everyone else’s.",
+        "You are irreplaceable hardware, this was just a software bug.",
+        "Don’t let them depreciate your value like that.",
+        "Recalculating trajectory: Still aimed for success.",
+        "Closing out the quarter: You are still very profitable.",
+        "Your success is a constant, this exam is just a variable.",
+        "I am predicting a massive rebound in tomorrow’s market.",
+        "Outdated server: The exam. Current version: You.",
+        "Keep the equity in your attitude high.",
+        "Please hold while we locate your winning streak."
+    ];
+
+    // DOM Elements
+    var messageEl = document.getElementById('message');
+    var btn = document.getElementById('boost-btn');
+    var countEl = document.getElementById('count');
+    
+    // State
+    var count = 0;
+    var isAnimating = false;
+
+    // Helper: Get Random Message
+    function getRandomMessage() {
+        var randomIndex = Math.floor(Math.random() * messages.length);
+        return messages[randomIndex];
+    }
+
+    // Helper: Update Message with Animation
+    function updateMessage() {
+        if (isAnimating) return; 
+        isAnimating = true;
+
+        // 1. Fade Out
+        messageEl.style.opacity = '0';
+
+        // 2. Change Text after fade out completes
+        setTimeout(function() {
+            messageEl.innerText = getRandomMessage();
+            
+            // 3. Fade In
+            messageEl.style.opacity = '1';
+            isAnimating = false;
+        }, 300);
+    }
+
+    // Event Listener
+    btn.addEventListener('click', function() {
+        // Update Counter
+        count++;
+        countEl.innerText = count;
+        
+        // Trigger Message Update
+        updateMessage();
+    });
+
+    // Set initial message on load
+    messageEl.innerText = getRandomMessage();
+
+</script>
+
+</body>
+</html>
